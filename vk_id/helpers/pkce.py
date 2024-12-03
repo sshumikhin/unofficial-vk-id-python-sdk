@@ -62,8 +62,3 @@ class PKCE:
     def __generate_code_challenge(cls, code_verifier: str) -> str:
         code_challenge = base64.urlsafe_b64encode(hashlib.sha256(code_verifier.encode()).digest()).decode().rstrip('=')
         return code_challenge
-
-    # def __setattr__(self, key, value):
-    #     if key not in self.__dict__:
-    #         raise AttributeError
-    #     super().__setattr__(key, value)
