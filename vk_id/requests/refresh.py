@@ -15,7 +15,7 @@ class _RefreshAccessToken(BaseForRequests):
                        refresh_token: str,
                        device_id: str,
                        state: str,
-                       scopes: list) -> Tokens| Error:
+                       scopes: list) -> Tokens | Error:
         async with aiohttp.ClientSession() as session:
 
             scopes = ValidateScopes.check_scopes(value=scopes)

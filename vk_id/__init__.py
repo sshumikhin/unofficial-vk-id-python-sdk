@@ -8,26 +8,31 @@ from vk_id.helpers.pkce import PKCE
 
 VK_ID_APP_INSTANCE: VK_ID | None = None
 
-__all__ = ("configure",
+__version__ = "0.2.0"
+
+__all__ = ("configure_app",
+           "get_app_configuration",
+           "generate_pkce",
            "exchange_code",
            "get_user_public_info",
            "refresh_access_token")
 
 
-def configure(
+def configure_app(
+        app_name: str,
         client_id: str,
         client_secret: str,
         client_access_key: str,
         **uris
 ):
 
-    # TODO: добавить app_name и в pkce возвращать помимо основных параметров client_id и так далее
     global VK_ID_APP_INSTANCE
 
     if VK_ID_APP_INSTANCE is not None:
         raise AppAlreadyInitialized
 
     vk = VK_ID(
+        app_name=app_name,
         client_id=client_id,
         client_secret=client_secret,
         client_access_key=client_access_key
@@ -39,8 +44,17 @@ def configure(
     VK_ID_APP_INSTANCE = vk
 
 
+def get_app_configuration() -> VK_ID:
+    # TODO: проверять if ... else ...
+    try:
+        return VK_ID_APP_INSTANCE
+    except AttributeError:
+        pass
+
+
 def generate_pkce(scopes: list = None) -> PKCE:
-    return PKCE([Scopes.DEFAULT.value] if scopes is None else scopes)
+    pkce = PKCE([Scopes.DEFAULT.value] if scopes is None else scopes)
+    return pkce
 
 
 async def exchange_code(
@@ -57,7 +71,7 @@ async def exchange_code(
         raise URINotTrusted
 
     try:
-        return await VK_ID_APP_INSTANCE.code_exchanger(
+        return await VK_ID_APP_INSTANCE._code_exchanger(
             code_verifier=code_verifier,
             redirect_uri=redirect_uri,
             code=code,
@@ -70,7 +84,7 @@ async def exchange_code(
 
 async def get_user_public_info(access_token: str) -> Error | User:
     try:
-        return await VK_ID_APP_INSTANCE.user_info(access_token=access_token)
+        return await VK_ID_APP_INSTANCE._user_info(access_token=access_token)
     except AttributeError:
         raise AppNotInitialized
 
@@ -80,13 +94,12 @@ async def refresh_access_token(
         device_id: str,
         state: str,
         scopes: list = None
-) -> Error | User:
+) -> Error | Tokens:
 
-    #TODO: Исправить, чтобы возвращала Tokens, а не User
     scopes = [Scopes.DEFAULT.value] if scopes is None else scopes
 
     try:
-        return await VK_ID_APP_INSTANCE.token_refresher(
+        return await VK_ID_APP_INSTANCE._token_refresher(
             refresh_token=refresh_token,
             device_id=device_id,
             state=state,
