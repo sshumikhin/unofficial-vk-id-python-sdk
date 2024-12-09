@@ -1,17 +1,30 @@
+# Standart
 import datetime
 import enum
+from typing import Optional, Union
+
+# Third party
 from pydantic import BaseModel, field_validator
-from typing import Optional, Union, Any
 
 
-class Gender(enum.StrEnum):
+class Gender(str, enum):
+    """
+        Вспомогательный класс для удобной конвертации пола пользователя
+    """
     MAN = "man"
     WOMAN = "woman"
     UNDEFINED = "undefined"
 
 
 class User(BaseModel):
-    user_id: Optional[str] = None
+    """
+        Pydantic модель, содержащая информацию о пользователе
+
+        В зависимости от указанных прав при обмене кода, некоторые поля могут присутсвовать или отсутствовать.
+
+        Подробнее: https://id.vk.com/about/business/go/docs/ru/vkid/latest/vk-id/connection/api-integration/api-description#Poluchenie-nemaskirovannyh-dannyh
+    """
+    user_id: Optional[Union[int, str]] = None
     first_name: str
     last_name: str
     avatar: str
@@ -22,7 +35,13 @@ class User(BaseModel):
     sex: Optional[int] = None
     verified: bool
 
+    @field_validator("user_id")
+    def check_user_id(cls, user_id: str):
+        return int(user_id)
+
+
     @field_validator("sex")
+    @classmethod
     def check_sex(cls, v):
         if v == 1:
             return Gender.WOMAN.value
@@ -32,10 +51,12 @@ class User(BaseModel):
             return Gender.UNDEFINED.value
 
     @field_validator("birthday")
+    @classmethod
     def check_birthday(cls, v):
         return datetime.datetime.strptime(v, "%d.%m.%Y").date()
 
     @field_validator("email")
+    @classmethod
     def validate_email(cls, v):
         if v == '':
             return None

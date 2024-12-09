@@ -1,8 +1,14 @@
 import enum
-from enum import StrEnum
+from enum import Enum
 
 
-class Scopes(StrEnum):
+class Scopes(str, Enum):
+    """
+        Класс, представляющий собой список доступных разрешений,
+        которые можно указать при инициализации VK ID SDK в клиентском приложении или при обмене refresh токена
+
+        Подробнее: https://id.vk.com/about/business/go/docs/ru/vkid/latest/vk-id/connection/work-with-user-info/scopes
+    """
     DEFAULT = "vkid.personal_info"
     EMAIL = "email"
     PHONE = "phone"
@@ -22,7 +28,10 @@ class Scopes(StrEnum):
     NOTES = "notes"
 
 
-class URLS(StrEnum):
+class URLS(str, Enum):
+    """
+    Класс, представляющий собой список url адресов для работы с сервисом VK ID
+    """
     AUTH = "https://id.vk.com/oauth2/auth"
     REVOKE_TOKEN = "https://id.vk.com/oauth2/revoke"
     LOGOUT = "https://id.vk.com/oauth2/logout"
@@ -30,10 +39,12 @@ class URLS(StrEnum):
     USER_INFO = "https://id.vk.com/oauth2/user_info"
 
 
-class GrantTypes(StrEnum):
+class GrantTypes(str, Enum):
+    """
+    Класс, отвечающий за параметр 'grant_type', отправляемый при запросах на получение токенов
+    """
     AUTHORIZATION_CODE = "authorization_code"
     REFRESH_TOKEN = "refresh_token"
 
 
-CONTENT_TYPE = "application/x-www-form-urlencoded"
-DEFAULT_HEADERS = {"Content-Type": CONTENT_TYPE}
+DEFAULT_HEADERS = {"Content-Type": "application/x-www-form-urlencoded"}

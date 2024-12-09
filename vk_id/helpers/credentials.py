@@ -1,4 +1,7 @@
 class String:
+    """
+    Вспомогательный валидационный класс, имплементирующий структуре дескриптора
+    """
 
     def __set_name__(self, owner, name):
         self.name = "__" + name
@@ -20,6 +23,9 @@ class String:
 
 
 class ClientID(String):
+    """
+    Вспомогательный валидатационный класс, имплементирующий структуре дескриптора
+    """
 
     def __set__(self, instance, value: str):
 

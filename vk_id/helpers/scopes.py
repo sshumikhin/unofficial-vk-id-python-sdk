@@ -1,11 +1,14 @@
-from ..constants import Scopes
-from ..exception import WrongScopes
-
-# __all__ = []
+# First party
+from vk_id.constants import Scopes
+from vk_id.exception import WrongScopes
 
 
 class ValidateScopes:
+    """
+        Вспомогательный валидационный класс, имплементирующий структуре дескриптора
 
+        Используется в классах PKCE и _RefreshAccessToken
+    """
     @staticmethod
     def check_scopes(value):
         if not type(value) == list:

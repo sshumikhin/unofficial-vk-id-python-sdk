@@ -1,3 +1,4 @@
+# First party
 from vk_id.helpers.urls import TrustedURIs
 from vk_id.helpers.credentials import String, ClientID
 from vk_id.requests.auth import _ExchangeCodeToToken
@@ -6,7 +7,11 @@ from vk_id.requests.refresh import _RefreshAccessToken
 
 
 class VK_ID:
+    """
+        Класс для работы с API VK ID
 
+        Собирает в себе все подклассы для работы с API
+    """
     client_id = ClientID()
     client_secret = String()
     client_access_key = String()

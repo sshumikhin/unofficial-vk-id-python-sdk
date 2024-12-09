@@ -8,14 +8,16 @@ from vk_id.helpers.pkce import PKCE
 
 VK_ID_APP_INSTANCE: VK_ID | None = None
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
-__all__ = ("configure_app",
-           "get_app_configuration",
-           "generate_pkce",
-           "exchange_code",
-           "get_user_public_info",
-           "refresh_access_token")
+__all__ = (
+    "configure_app",
+    "get_app_configuration",
+    "generate_pkce",
+    "exchange_code",
+    "get_user_public_info",
+    "refresh_access_token"
+)
 
 
 def configure_app(
@@ -25,7 +27,9 @@ def configure_app(
         client_access_key: str,
         **uris
 ):
-
+    """
+    Функция, конфигурирующая приложение VK ID
+    """
     global VK_ID_APP_INSTANCE
 
     if VK_ID_APP_INSTANCE is not None:
@@ -45,7 +49,11 @@ def configure_app(
 
 
 def get_app_configuration() -> VK_ID:
+    """
+    Функция, возвращающая актуальную конфигурацию приложения
+    """
     # TODO: проверять if ... else ...
+
     try:
         return VK_ID_APP_INSTANCE
     except AttributeError:
@@ -53,6 +61,9 @@ def get_app_configuration() -> VK_ID:
 
 
 def generate_pkce(scopes: list = None) -> PKCE:
+    """
+        Функция, генерирующая Proof Key for Code Exchange (PKCE)
+    """
     pkce = PKCE([Scopes.DEFAULT.value] if scopes is None else scopes)
     return pkce
 
@@ -64,16 +75,13 @@ async def exchange_code(
             device_id: str,
             state: str
     ) -> Error | Tokens:
-
-    try:
-        redirect_uri = getattr(VK_ID_APP_INSTANCE.trusted_uris, redirect_uri_tag)
-    except AttributeError:
-        raise URINotTrusted
-
+    """
+        Ассинхронная функция для обмена кода на пару токенов
+    """
     try:
         return await VK_ID_APP_INSTANCE._code_exchanger(
             code_verifier=code_verifier,
-            redirect_uri=redirect_uri,
+            redirect_uri=getattr(VK_ID_APP_INSTANCE.trusted_uris, redirect_uri_tag),
             code=code,
             device_id=device_id,
             state=state
@@ -83,6 +91,9 @@ async def exchange_code(
 
 
 async def get_user_public_info(access_token: str) -> Error | User:
+    """
+    Aссинхронная функция для получения публичной информации о пользователе
+    """
     try:
         return await VK_ID_APP_INSTANCE._user_info(access_token=access_token)
     except AttributeError:
@@ -95,9 +106,11 @@ async def refresh_access_token(
         state: str,
         scopes: list = None
 ) -> Error | Tokens:
+    """
+        Ассинхронная функция для обновления пары токенов
+    """
 
     scopes = [Scopes.DEFAULT.value] if scopes is None else scopes
-
     try:
         return await VK_ID_APP_INSTANCE._token_refresher(
             refresh_token=refresh_token,
